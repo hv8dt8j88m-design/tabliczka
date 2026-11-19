@@ -1,0 +1,286 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style></head><body>
+<title>Tabliczka mnożenia do 30</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Układ: tablica 10×10 = mapa postępu; zakładki = kolejne kroki nauki; duża klawiatura do odpowiedzi */
+:root{
+  --bg:#f3f6f4; --card:#ffffff; --ink:#1c2a26; --muted:#5d6e68; --line:#d3ddd8;
+  --teal:#0f7f72; --teal-soft:#dcf1ec; --orange:#e26a12; --orange-soft:#fde9d8;
+  --good:#1d8f4e; --good-soft:#ddf5e7; --bad:#d23a3a; --bad-soft:#fde3e3;
+  --b0:#e7ece9; --b1:#f7c9c4; --b2:#f9dcae; --b3:#f6efa2; --b4:#c9eac0; --b5:#7fd09b;
+  --f-head:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Segoe UI",system-ui,sans-serif; --f-body:ui-rounded,-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --card:#18231f; --ink:#e6f0ec; --muted:#9db0a9; --line:#2b3a35;
+  --teal:#55d1bf; --teal-soft:#183731; --orange:#ff9b52; --orange-soft:#3a2615;
+  --good:#5fd394; --good-soft:#183427; --bad:#ff7a7a; --bad-soft:#3d1f1f;
+  --b0:#24302c; --b1:#5a2a2a; --b2:#5a4220; --b3:#545020; --b4:#2f5530; --b5:#2f7f4c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --card:#18231f; --ink:#e6f0ec; --muted:#9db0a9; --line:#2b3a35;
+  --teal:#55d1bf; --teal-soft:#183731; --orange:#ff9b52; --orange-soft:#3a2615;
+  --good:#5fd394; --good-soft:#183427; --bad:#ff7a7a; --bad-soft:#3d1f1f;
+  --b0:#24302c; --b1:#5a2a2a; --b2:#5a4220; --b3:#545020; --b4:#2f5530; --b5:#2f7f4c; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+/* iPad/iPhone: bez zoomu przy szybkim stukaniu, bez zaznaczania tekstu na klawiaturze */
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none}
+.pad,.key,.task,.num,nav{-webkit-user-select:none;user-select:none}
+#nojs{display:grid;gap:12px}
+.jsok #nojs{display:none}
+#err{background:var(--bad-soft);color:var(--bad);border-radius:12px;padding:12px;font-weight:700}
+.wrap{max-width:860px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+h1,h2,h3{font-family:var(--f-head);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.8rem,5vw,2.5rem);color:var(--teal)}
+h2{font-size:1.6rem}
+h3{font-size:1.2rem}
+p{margin:0}
+.small{font-size:.92rem;color:var(--muted)}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+nav button{flex:0 0 auto;font-family:var(--f-head);font-weight:700;font-size:1rem;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:6px 12px;cursor:pointer}
+nav button.on{background:var(--teal);border-color:var(--teal);color:var(--card)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:12px;min-width:0}
+.tip{background:var(--orange-soft);border-radius:12px;padding:12px 14px;display:grid;gap:6px}
+.tip b{color:var(--orange)}
+.btn{font-family:inherit;font-weight:800;font-size:1.05rem;border:none;border-radius:12px;padding:10px 18px;cursor:pointer;background:var(--teal);color:var(--card)}
+.btn.sec{background:var(--card);color:var(--teal);border:2px solid var(--teal)}
+.btn.warn{background:var(--card);color:var(--bad);border:2px solid var(--bad)}
+.btn:focus-visible,nav button:focus-visible,.key:focus-visible,.num:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nums{display:flex;flex-wrap:wrap;gap:6px}
+.num{font-family:var(--f-head);font-weight:800;font-size:1.3rem;width:2.4em;height:2.4em;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.num.on{background:var(--orange);border-color:var(--orange);color:var(--card)}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.fact{font-family:var(--f-head);font-size:1.45rem;font-weight:700;border:2px solid var(--line);border-radius:12px;padding:6px 10px;text-align:center;cursor:pointer;background:var(--card);color:var(--ink);font-variant-numeric:tabular-nums}
+.fact.sel{border-color:var(--orange);background:var(--orange-soft)}
+.fact .res{color:var(--teal)}
+.fact.hid .res{color:transparent;background:var(--b0);border-radius:6px;padding:0 6px}
+.dots{display:grid;gap:5px;justify-content:center;padding:10px}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--orange);display:block}
+.dots i.alt{background:var(--teal)}
+.dotcap{text-align:center;font-weight:800}
+/* quiz */
+.q{display:grid;gap:12px;justify-items:center}
+.task{font-family:var(--f-head);font-size:clamp(2.4rem,9vw,3.6rem);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;text-align:center}
+.ans{display:inline-block;min-width:1.6em;border-bottom:4px solid var(--teal);color:var(--teal)}
+.ans.good{color:var(--good);border-color:var(--good)} .ans.bad{color:var(--bad);border-color:var(--bad)}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(64px,90px));gap:8px}
+.key{font-family:var(--f-head);font-weight:800;font-size:1.6rem;padding:8px 0;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.key.ok{background:var(--teal);border-color:var(--teal);color:var(--card)}
+.key:active{transform:scale(.96)}
+.fb{font-weight:800;min-height:1.5em;text-align:center}
+.fb.good{color:var(--good)} .fb.bad{color:var(--bad)}
+.bar{height:12px;border-radius:6px;background:var(--b0);overflow:hidden;width:100%;max-width:420px}
+.bar span{display:block;height:100%;background:var(--teal);width:0}
+@media (prefers-reduced-motion:no-preference){.bar span{transition:width .3s}}
+.stat{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;font-weight:800;font-variant-numeric:tabular-nums}
+.stat span b{font-family:var(--f-head);font-size:1.4rem;color:var(--teal)}
+/* map */
+.tw{overflow-x:auto}
+table.map{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabular-nums;margin:0 auto}
+.map td,.map th{width:2.4em;height:2.2em;text-align:center;border-radius:7px;font-weight:800}
+.map th{color:var(--muted)}
+.map td.x{background:transparent}
+.map td.b0{background:var(--b0);color:var(--muted)} .map td.b1{background:var(--b1)} .map td.b2{background:var(--b2)} .map td.b3{background:var(--b3)} .map td.b4{background:var(--b4)} .map td.b5{background:var(--b5)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-size:.88rem}
+.legend span{display:inline-flex;gap:5px;align-items:center}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+.errs{display:flex;flex-wrap:wrap;gap:6px}
+.errs span{background:var(--bad-soft);color:var(--bad);border-radius:8px;padding:2px 8px;font-weight:800}
+ol.plan{margin:0;padding-left:1.3em;display:grid;gap:6px}
+</style>
+
+<div class="wrap">
+<header style="display:grid;gap:6px">
+  <p style="font-weight:800;color:var(--orange)">Na poniedziałek 23 listopada · na pamięć</p>
+  <h1>Tabliczka mnożenia do 30</h1>
+  <p class="small">Uczymy się krok po kroku: najpierw poznajemy, potem ćwiczymy jedną liczbę, a na koniec „pudełka pamięci” pilnują, żeby każde działanie weszło do głowy. Postęp zapisuje się w tej przeglądarce.</p>
+</header>
+<div id="err" hidden></div>
+<div id="nojs" class="card">
+  <h2>Ściąga – cała tabliczka do 30</h2>
+  <p><b>Ćwiczenia się nie uruchomiły.</b> Tak bywa, gdy plik otwiera się w podglądzie (np. w aplikacji Pliki na iPadzie). Otwórz link do strony w przeglądarce Safari – wtedy działają ćwiczenia, pudełka pamięci i sprawdzian. Poniżej tabela do nauki.</p>
+  <div class="tw"><table class="map">
+  <tr><th>·</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr>
+  <tr><th>1</th><td class="b0">1</td><td class="b0">2</td><td class="b0">3</td><td class="b0">4</td><td class="b0">5</td><td class="b0">6</td><td class="b0">7</td><td class="b0">8</td><td class="b0">9</td><td class="b0">10</td></tr>
+  <tr><th>2</th><td class="b0">2</td><td class="b0">4</td><td class="b0">6</td><td class="b0">8</td><td class="b0">10</td><td class="b0">12</td><td class="b0">14</td><td class="b0">16</td><td class="b0">18</td><td class="b0">20</td></tr>
+  <tr><th>3</th><td class="b0">3</td><td class="b0">6</td><td class="b0">9</td><td class="b0">12</td><td class="b0">15</td><td class="b0">18</td><td class="b0">21</td><td class="b0">24</td><td class="b0">27</td><td class="b0">30</td></tr>
+  <tr><th>4</th><td class="b0">4</td><td class="b0">8</td><td class="b0">12</td><td class="b0">16</td><td class="b0">20</td><td class="b0">24</td><td class="b0">28</td><td></td><td></td><td></td></tr>
+  <tr><th>5</th><td class="b0">5</td><td class="b0">10</td><td class="b0">15</td><td class="b0">20</td><td class="b0">25</td><td class="b0">30</td><td></td><td></td><td></td><td></td></tr>
+  <tr><th>6</th><td class="b0">6</td><td class="b0">12</td><td class="b0">18</td><td class="b0">24</td><td class="b0">30</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><th>7</th><td class="b0">7</td><td class="b0">14</td><td class="b0">21</td><td class="b0">28</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><th>8</th><td class="b0">8</td><td class="b0">16</td><td class="b0">24</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><th>9</th><td class="b0">9</td><td class="b0">18</td><td class="b0">27</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><th>10</th><td class="b0">10</td><td class="b0">20</td><td class="b0">30</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table></div>
+</div>
+<nav id="nav"></nav>
+<main id="main" style="display:grid;gap:14px"></main>
+</div>
+
+<script>
+window.onerror=function(m,src,line){var e=document.getElementById('err');if(e){e.hidden=false;e.textContent='Coś poszło nie tak na tym urządzeniu: '+m+' (linia '+line+'). Zrób zdjęcie tego napisu i wyślij – poprawię.'}};
+</script>
+<script>
+const $=s=>document.querySelector(s);
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function H(t,c,h){const e=el(t,c);e.innerHTML=h;return e}
+function B(t,c){const b=el('button','btn'+(c?' '+c:''),t);b.type='button';return b}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* wszystkie działania a·b ≤ 30 (a,b od 1 do 10) */
+const FACTS=[];for(let a=1;a<=10;a++)for(let b=1;b<=10;b++)if(a*b<=30)FACTS.push([a,b]);
+const K=(a,b)=>a+'x'+b;
+
+/* zapis postępu (tylko ta przeglądarka) */
+const SKEY='tabliczka30-v1';
+let S={box:{},best:0};
+try{const r=JSON.parse(localStorage.getItem(SKEY)||'null');if(r&&r.box)S=r}catch(e){}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(S))}catch(e){}}
+const box=(a,b)=>S.box[K(a,b)]||0;
+function grade(a,b,ok,ms){const k=K(a,b);let v=S.box[k]||0;
+  if(!ok)v=1;else if(ms<6000)v=Math.min(5,v+1);else v=Math.max(v,1);
+  S.box[k]=v;save()}
+
+const TRICK={
+1:'Razy 1 – liczba się nie zmienia: 1 · 7 = 7.',
+2:'Razy 2 – to podwajanie: 2 · 6 = 6 + 6 = 12. Licz dwójkami: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20.',
+3:'Razy 3 – licz trójkami: 3, 6, 9, 12, 15, 18, 21, 24, 27, 30. Albo: podwój i dodaj jeszcze raz (3 · 6 = 6 + 6 + 6 = 18).',
+4:'Razy 4 – podwój dwa razy: 4 · 6 → 6 + 6 = 12 → 12 + 12 = 24.',
+5:'Razy 5 – wyniki kończą się na 0 albo 5: 5, 10, 15, 20, 25, 30. Jak na zegarze – co 5 minut.',
+6:'Razy 6 (do 30): 6, 12, 18, 24, 30. 6 · 5 = 30 to to samo co 5 · 6!',
+7:'Razy 7 (do 30) – to tygodnie: 1 tydzień = 7 dni, 2 tygodnie = 14, 3 tygodnie = 21, 4 tygodnie = 28.',
+8:'Razy 8 (do 30): 8, 16, 24. Podwajaj: 8 → 16 → 32 (ale 32 to już za dużo).',
+9:'Razy 9 (do 30): 9, 18, 27. Sztuczka: 9 · 3 = 30 − 3 = 27. Cyfry wyniku dodają się do 9: 1 + 8 = 9, 2 + 7 = 9.',
+10:'Razy 10 – dopisz zero: 10 · 3 = 30, 3 · 10 = 30.'
+};
+
+/* ---------- zadanie z klawiaturą ---------- */
+function ask(host,a,b,form,onDone){
+  // form: 'n' = a·b=?, 'm' = a·?=wynik
+  const q=el('div','q');const t=el('div','task');const ans=el('span','ans',' ');
+  if(form==='m'){t.append(a+' · ',ans,' = '+(a*b))}else{t.append(a+' · '+b+' = ',ans)}
+  const fb=el('div','fb');const pad=el('div','pad');let v='',done=false;const t0=Date.now();
+  const show=()=>{ans.textContent=v||' '};
+  function press(k){if(done)return;if(k==='⌫')v=v.slice(0,-1);else if(k==='OK'){if(v)finish()}else if(v.length<2)v+=k;show()}
+  function finish(){done=true;const want=form==='m'?b:a*b;const ok=+v===want;const ms=Date.now()-t0;
+    ans.classList.add(ok?'good':'bad');
+    fb.className='fb '+(ok?'good':'bad');
+    fb.textContent=ok?(ms<6000?'Brawo!':'Dobrze! Następnym razem szybciej.'):'Prawie! '+a+' · '+b+' = '+(a*b);
+    document.removeEventListener('keydown',kb);onDone(ok,ms)}
+  ['1','2','3','4','5','6','7','8','9','⌫','0','OK'].forEach(k=>{const x=el('button','key'+(k==='OK'?' ok':''),k);x.type='button';x.onclick=()=>press(k);pad.append(x)});
+  function kb(e){if(!q.isConnected){document.removeEventListener('keydown',kb);return}
+    if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==='Backspace')press('⌫');else if(e.key==='Enter'){e.preventDefault();press('OK')}}
+  document.addEventListener('keydown',kb);
+  q.append(t,pad,fb);host.innerHTML='';host.append(q);return q}
+
+/* ---------- mapa postępu ---------- */
+function mapTable(){const t=el('table','map');let h='<tr><th>·</th>';for(let b=1;b<=10;b++)h+='<th>'+b+'</th>';h+='</tr>';
+  for(let a=1;a<=10;a++){h+='<tr><th>'+a+'</th>';for(let b=1;b<=10;b++)h+=a*b<=30?'<td class="b'+box(a,b)+'">'+a*b+'</td>':'<td class="x"></td>';h+='</tr>'}
+  t.innerHTML=h;const w=el('div','tw');w.append(t);return w}
+function legend(){return H('div','legend','<span><i style="background:var(--b0)"></i>nowe</span><span><i style="background:var(--b1)"></i>pomyłka</span><span><i style="background:var(--b2)"></i>1 raz dobrze</span><span><i style="background:var(--b3)"></i>2 razy</span><span><i style="background:var(--b4)"></i>3 razy</span><span><i style="background:var(--b5)"></i>umiem na pamięć ✓</span>')}
+const known=()=>FACTS.filter(([a,b])=>box(a,b)>=4).length;
+
+/* ---------- STRONY ---------- */
+const PAGES=[
+{id:'poznaj',name:'1. Poznaj',build(s){
+  const c=el('div','card');s.append(c);
+  c.append(el('h2',null,'Poznaj jedną liczbę'),el('p','small','Wybierz liczbę. Kliknij działanie, a zobaczysz je jako kropki.'));
+  const nums=el('div','nums');const tip=el('div','tip');const facts=el('div','facts');const dots=el('div');
+  const hide=B('Zakryj wyniki','sec');let hidden=false,cur=2;
+  hide.onclick=()=>{hidden=!hidden;hide.textContent=hidden?'Pokaż wyniki':'Zakryj wyniki';[...facts.children].forEach(f=>f.classList.toggle('hid',hidden))};
+  function drawDots(a,b){dots.innerHTML='';const g=el('div','dots');g.style.gridTemplateColumns='repeat('+b+',16px)';
+    for(let i=0;i<a;i++)for(let j=0;j<b;j++){const d=el('i',i%2?'alt':'');g.append(d)}
+    dots.append(g,el('p','dotcap',a+' rzędy po '+b+' kropek = '+(a*b)))}
+  function pickN(n){cur=n;[...nums.children].forEach(x=>x.classList.toggle('on',+x.textContent===n));
+    tip.innerHTML='<b>Sztuczka</b><p>'+TRICK[n]+'</p>';facts.innerHTML='';
+    FACTS.filter(([a])=>a===n).forEach(([a,b])=>{const f=el('button','fact'+(hidden?' hid':''));f.type='button';
+      f.innerHTML=a+' · '+b+' = <span class="res">'+(a*b)+'</span>';
+      f.onclick=()=>{[...facts.children].forEach(x=>x.classList.remove('sel'));f.classList.add('sel');if(hidden)f.classList.remove('hid');drawDots(a,b)};facts.append(f)});
+    drawDots(n,Math.min(3,Math.floor(30/n)))}
+  for(let n=1;n<=10;n++){const x=el('button','num',String(n));x.type='button';x.onclick=()=>pickN(n);nums.append(x)}
+  c.append(nums,tip,el('div','row'),facts,dots);c.children[4].append(hide);pickN(2);
+  s.append(H('div','card',`<h3>Zamiana miejscami – połowa nauki mniej!</h3>
+  <p><b>3 · 7 = 7 · 3 = 21.</b> Kolejność liczb przy mnożeniu nie zmienia wyniku. Jeśli znasz 3 · 7, to znasz też 7 · 3.</p>
+  <p>Dlatego razy 6, 7, 8, 9 i 10 to prawie same działania, które już znasz z 1, 2, 3, 4 i 5.</p>
+  <h3>Najtrudniejsze – powtarzaj na głos</h3>
+  <div class="facts"><div class="fact">3 · 6 = <span class="res">18</span></div><div class="fact">3 · 7 = <span class="res">21</span></div><div class="fact">3 · 8 = <span class="res">24</span></div><div class="fact">3 · 9 = <span class="res">27</span></div><div class="fact">4 · 6 = <span class="res">24</span></div><div class="fact">4 · 7 = <span class="res">28</span></div></div>`));
+}},
+{id:'cwicz',name:'2. Ćwicz jedną liczbę',build(s){
+  const c=el('div','card');s.append(c);
+  c.append(el('h2',null,'Ćwicz jedną liczbę'),el('p','small','Wybierz liczbę. Najpierw po kolei, potem pomieszane. Odpowiadaj klawiaturą na ekranie albo cyframi i Enterem.'));
+  const nums=el('div','nums');const mode=el('div','row');const area=el('div');const st=el('div','stat');c.append(nums,mode,area,st);
+  let n=2,mix=false,list=[],i=0,ok=0;
+  const m1=B('Po kolei','sec'),m2=B('Pomieszane','sec'),m3=B('Zamienione (np. 7 · 3)','sec');let swap=false;
+  m1.onclick=()=>{mix=false;swap=false;start()};m2.onclick=()=>{mix=true;swap=false;start()};m3.onclick=()=>{mix=true;swap=true;start()};
+  mode.append(m1,m2,m3);
+  function start(){[...mode.children].forEach((x,j)=>x.className='btn '+((j===0&&!mix)||(j===1&&mix&&!swap)||(j===2&&swap)?'':'sec'));
+    list=FACTS.filter(([a])=>a===n).map(([a,b])=>swap?[b,a]:[a,b]).filter(([a,b])=>a*b<=30);if(mix)list=shuffle(list);i=0;ok=0;next()}
+  function next(){if(i>=list.length){area.innerHTML='';const d=el('div','q');d.append(el('div','task',ok+' / '+list.length),el('p','fb '+(ok===list.length?'good':''),ok===list.length?'Wszystko dobrze! Spróbuj „Pomieszane” albo następną liczbę.':'Jeszcze raz – do skutku!'));const again=B('Jeszcze raz');again.onclick=start;d.append(again);area.append(d);st.textContent='';return}
+    const [a,b]=list[i];st.textContent='Zadanie '+(i+1)+' z '+list.length+' · dobrze: '+ok;
+    ask(area,a,b,'n',(good,ms)=>{grade(a,b,good,ms);if(good)ok++;i++;setTimeout(next,good?700:1800)})}
+  for(let k=1;k<=10;k++){const x=el('button','num',String(k));x.type='button';x.onclick=()=>{n=k;[...nums.children].forEach(y=>y.classList.toggle('on',+y.textContent===k));start()};nums.append(x)}
+  nums.children[1].classList.add('on');start();
+}},
+{id:'pamiec',name:'3. Na pamięć',build(s){
+  const c=el('div','card');s.append(c);
+  c.append(el('h2',null,'Pudełka pamięci'),H('p','small','Komputer pyta częściej o to, czego jeszcze nie umiesz. Każde działanie ma kolor na tablicy. Żeby było <b>zielone</b>, trzeba odpowiedzieć dobrze <b>4 razy</b> i <b>szybko</b> (do 6 sekund). Pomyłka cofa działanie na czerwono.'));
+  const head=el('div','stat');const pb=el('div','bar');pb.append(el('span'));const area=el('div');const ctl=el('div','row');ctl.style.justifyContent='center';
+  const mapBox=el('div');c.append(head,pb,area,ctl);
+  const mc=el('div','card');mc.append(el('h3',null,'Mapa postępu'),mapBox,legend());s.append(mc);
+  const startB=B('Zacznij rundę (15 pytań)');ctl.append(startB);
+  const resetB=B('Wyzeruj postęp','warn');let armed=false;resetB.onclick=()=>{if(!armed){armed=true;resetB.textContent='Na pewno? Kliknij jeszcze raz';setTimeout(()=>{armed=false;resetB.textContent='Wyzeruj postęp'},4000);return}S.box={};save();armed=false;resetB.textContent='Wyzeruj postęp';refresh()};
+  const rc=el('div','row');rc.style.justifyContent='flex-end';rc.append(resetB);mc.append(rc);
+  function refresh(){const k=known();head.innerHTML='<span>Umiem na pamięć: <b>'+k+'</b> / '+FACTS.length+'</span>';pb.firstChild.style.width=(k/FACTS.length*100)+'%';mapBox.innerHTML='';mapBox.append(mapTable())}
+  function pickRound(){const w=FACTS.map(f=>({f,w:[6,8,5,3,2,1][box(...f)]*(0.5+Math.random())}));w.sort((x,y)=>y.w-x.w);return shuffle(w.slice(0,15).map(x=>x.f))}
+  let list=[],i=0,ok=0,errs=[];
+  function run(){list=pickRound();i=0;ok=0;errs=[];startB.hidden=true;next()}
+  function next(){refresh();if(i>=list.length){area.innerHTML='';const d=el('div','q');d.append(el('div','task',ok+' / '+list.length));
+      if(errs.length){d.append(el('p','fb bad','Do powtórki:'));const e=el('div','errs');errs.forEach(t=>e.append(el('span',null,t)));d.append(e)}else d.append(el('p','fb good','Bez błędu!'));
+      area.append(d);startB.textContent='Następna runda';startB.hidden=false;return}
+    const [a,b]=list[i];const form=box(a,b)>=3&&Math.random()<.25?'m':'n';
+    ask(area,a,b,form,(good,ms)=>{grade(a,b,good,ms);if(good)ok++;else errs.push(a+' · '+b+' = '+a*b);i++;setTimeout(next,good?700:2000)})}
+  startB.onclick=run;refresh();
+  area.append(H('div','tip','<b>Jak się uczyć</b><ol class="plan"><li>Dziś i jutro: 3–4 rundy dziennie, z przerwą między nimi.</li><li>Po każdej rundzie przeczytaj na głos działania „do powtórki”.</li><li>Cel na niedzielę wieczór: cała tablica zielona.</li><li>W poniedziałek rano: jedna runda na rozgrzewkę.</li></ol>'));
+}},
+{id:'wyscig',name:'4. Wyścig 60 s',build(s){
+  const c=el('div','card');s.append(c);
+  c.append(el('h2',null,'Wyścig z czasem'),el('p','small','Ile działań zdążysz w 60 sekund? Pobij swój rekord!'));
+  const st=el('div','stat');const pb=el('div','bar');pb.append(el('span'));const area=el('div');const go=B('Start!');const ctl=el('div','row');ctl.style.justifyContent='center';ctl.append(go);
+  c.append(st,pb,area,ctl);let ok=0,bad=0,end=0,timer=null,errs=[];
+  const show=()=>{st.innerHTML='<span>Dobrze: <b>'+ok+'</b></span><span>Błędy: <b>'+bad+'</b></span><span>Rekord: <b>'+(S.best||0)+'</b></span>'};show();
+  function next(){if(Date.now()>=end)return;const [a,b]=FACTS[Math.floor(Math.random()*FACTS.length)];
+    ask(area,a,b,'n',(good,ms)=>{grade(a,b,good,ms);if(good)ok++;else{bad++;errs.push(a+' · '+b+' = '+a*b)}show();setTimeout(next,good?250:1200)})}
+  function stop(){clearInterval(timer);area.innerHTML='';const d=el('div','q');const rec=ok>(S.best||0);if(rec){S.best=ok;save()}
+    d.append(el('div','task',ok+' dobrze'),el('p','fb '+(rec?'good':''),rec?'Nowy rekord!':'Rekord: '+S.best));
+    if(errs.length){const e=el('div','errs');errs.forEach(t=>e.append(el('span',null,t)));d.append(e)}area.append(d);show();go.textContent='Jeszcze raz';go.hidden=false}
+  go.onclick=()=>{ok=0;bad=0;errs=[];end=Date.now()+60000;go.hidden=true;show();next();
+    timer=setInterval(()=>{const left=Math.max(0,end-Date.now());pb.firstChild.style.width=(left/600)+'%';if(!left)stop()},200)};
+}},
+{id:'sprawdzian',name:'5. Sprawdzian',build(s){
+  const c=el('div','card');s.append(c);
+  c.append(el('h2',null,'Sprawdzian próbny'),el('p','small','20 pytań, tak jak w szkole – też z brakującą liczbą (np. 4 · _ = 28). Bez podpowiedzi!'));
+  const st=el('div','stat');const pb=el('div','bar');pb.append(el('span'));const area=el('div');const go=B('Zacznij sprawdzian');const ctl=el('div','row');ctl.style.justifyContent='center';ctl.append(go);
+  c.append(st,pb,area,ctl);let list=[],i=0,ok=0,errs=[];
+  function next(){pb.firstChild.style.width=(i/20*100)+'%';
+    if(i>=list.length){area.innerHTML='';const d=el('div','q');const ocena=ok>=19?'6 – celujący':ok>=17?'5 – bardzo dobry':ok>=14?'4 – dobry':ok>=11?'3 – dostateczny':'jeszcze poćwicz';
+      d.append(el('div','task',ok+' / 20'),el('p','fb '+(ok>=17?'good':'bad'),ocena));
+      if(errs.length){d.append(el('p','fb','Popraw te działania:'));const e=el('div','errs');errs.forEach(t=>e.append(el('span',null,t)));d.append(e)}
+      area.append(d);st.textContent='';go.textContent='Nowy sprawdzian';go.hidden=false;return}
+    const [a,b,form]=list[i];st.textContent='Pytanie '+(i+1)+' z 20';
+    ask(area,a,b,form,(good,ms)=>{grade(a,b,good,ms);if(good)ok++;else errs.push(a+' · '+b+' = '+a*b);i++;setTimeout(next,good?500:1500)})}
+  go.onclick=()=>{const pool=shuffle(FACTS.filter(([a,b])=>a>1&&b>1&&a!==10&&b!==10));
+    list=pool.slice(0,20).map((f,j)=>[f[0],f[1],j<4?'m':'n']);list=shuffle(list);i=0;ok=0;errs=[];go.hidden=true;next()};
+}}
+];
+
+const nav=$('#nav'),main=$('#main'),secs={};
+PAGES.forEach(p=>{const b=el('button',null,p.name);b.type='button';b.dataset.id=p.id;b.onclick=()=>show(p.id,true);nav.append(b)});
+function show(id,push){const p=PAGES.find(x=>x.id===id)||PAGES[0];
+  for(const k in secs){secs[k].remove();delete secs[k]}
+  const s=el('section');s.style.display='grid';s.style.gap='14px';p.build(s);secs[p.id]=s;main.append(s);
+  [...nav.children].forEach(b=>b.classList.toggle('on',b.dataset.id===p.id));
+  if(push){try{history.replaceState(null,'','#'+p.id)}catch(e){}window.scrollTo({top:0})}}
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+show(location.hash.slice(1));
+document.documentElement.classList.add('jsok');
+</script>
+</body></html>
